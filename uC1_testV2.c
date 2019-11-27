@@ -1,5 +1,5 @@
   /*
- * uC1_testV1.c
+ * uC1_testV2.c
  *
  * Created: 11/14/2019 6:43:57 PM
  * Author : aahun
@@ -12,7 +12,6 @@
 #include <util/delay.h>
 #include <string.h>
 #include <stdlib.h>
-#include "lcd.h"	// Include LCD header file 
 #include "usart_ATmega1284.h"
 #include "timer.h"
 
@@ -80,13 +79,7 @@ int main(void)
 	
     while (1) {
 		Radar();
-		
-		//itoa(distance,string,10);
-		//dtostrf(distance, 5, 2, string); // Convert distance into string
-		//LCD_DisplayString(1, "Distance");
-		//LCD_ClearScreen();
-		//LCD_DisplayString(1, string);
-		
+
 		if(distance < 20.00) {
 			PORTB |= (1 << PB0); // PB0 goes high
 			distflag = 1;
@@ -97,44 +90,38 @@ int main(void)
 		}
 		_delay_us(5000);
 		
-		if(USART_HasReceived(1) && !distflag) {
+		if(USART_HasReceived(1)) {
 			temp = USART_Receive(1);
 			USART_Flush(1);
 			if(temp == 0) {
-				//LCD_DisplayString(17, "center");
 				PORTC = 0;
 			} 
-			else if(temp == 1) {
-				//LCD_DisplayString(17, "front");
+			else if(temp == 1 && !distflag) {
 				PORTC = 0x55;
 			}
-			else if(temp == 2) {
-				//LCD_DisplayString(17, "front-left");
+			else if(temp == 2 && !distflag) {
 				PORTC = 0x59;
 			}
-			else if(temp == 3) {
-				//LCD_DisplayString(17, "front-right");
+			else if(temp == 3 && !distflag) {
 				PORTC = 0x56;
 			}
-			else if(temp == 4) {
-				//LCD_DisplayString(17, "left");
+			else if(temp == 4 && !distflag) {
 				PORTC = 0x69;
 			}
-			else if(temp == 5) {
-				//LCD_DisplayString(17, "right");
+			else if(temp == 5 && !distflag) {
 				PORTC = 0x96;
 			}
 			else if(temp == 6) {
-				//LCD_DisplayString(17, "left-rear");
 				PORTC = 0x9A;
 			}
 			else if(temp == 7) {
-				//LCD_DisplayString(17, "right-rear");
 				PORTC = 0x6A;
 			}
 			else if(temp == 8) {
-				//LCD_DisplayString(17, "rear");
 				PORTC = 0xAA;
+			}
+			else {
+				PORTC = 0;
 			}
 		}
 		//delay_ms(300);
